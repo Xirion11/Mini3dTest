@@ -12,6 +12,8 @@ public class DirtPile : MonoBehaviour
     [SerializeField] private CarrotPool _pool = default;
     [SerializeField] private float _carrotGrowthTime = 2f;
     [SerializeField] private Image _timerImage = default;
+    
+    private Carrot _currentCarrot;
 
     private void Start()
     {
@@ -37,10 +39,13 @@ public class DirtPile : MonoBehaviour
         _timerImage.fillAmount = 1f;
         _timerImage.rectTransform.DOScale(Vector3.zero, 0.25f).SetEase(Ease.InBack).OnComplete(() =>
         {
-            var carrot = _pool.Get(_carrotSpot);
+            _currentCarrot = _pool.Get(_carrotSpot);
             _timerImage.gameObject.SetActive(false);
         });
+    }
 
-        //var carrot = _pool.Get(_carrotSpot);
+    public void OnSelected()
+    {
+        _currentCarrot?.SetSelected();
     }
 }

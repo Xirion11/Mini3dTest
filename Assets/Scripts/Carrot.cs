@@ -9,6 +9,7 @@ using Random = UnityEngine.Random;
 public class Carrot : MonoBehaviour
 {
     [SerializeField] private Transform _transform = default;
+    [SerializeField] private Transform _innerTransform = default;
     [SerializeField] private Transform[] _leaves = default;
 
     [SerializeField] private float _leavesDelay = 1f;
@@ -26,8 +27,11 @@ public class Carrot : MonoBehaviour
     [SerializeField] private float _pulseDuration = 0.25f;
     [SerializeField] private int _pulseVibrato = 10;
     [SerializeField] private float _pulseElasticity = 1f;
-
+    [SerializeField] private LayerMask _groundLayerMask = default;
+    
     private Sequence _danceSequence = default;
+    private bool _isSelected = false;
+    private GameObject _sphere;
 
     private void Start()
     {
@@ -39,6 +43,33 @@ public class Carrot : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.P))
         {
             Pulse();
+        }
+
+        if (_isSelected)
+        {
+            // Vector3 direction = _transform.position - Input.mousePosition;
+            // Quaternion rotation = Quaternion.LookRotation(direction);
+            // _transform.rotation = rotation;
+        }
+    }
+    
+    void RotateObjectToMouse()
+    {
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+        // Raycast to find the ground hit position
+        if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, _groundLayerMask))
+        {
+            Vector3 newPosition = new Vector3(hit.point.x, 1f, hit.point.z);//hit.point + Vector3.up * 0.5f;
+            //newPosition = new Vector3(newPosition.x, Mathf.Clamp(newPosition.y, minY, maxY), newPosition.z);
+            _sphere.transform.position = newPosition;
+            _sphere.transform.localScale = Vector3.one * 0.1f;
+            
+            Vector3 direction = (_sphere.transform.position - _transform.position).normalized;
+
+            // Calculate the rotation towards the target point
+            Quaternion lookRotation = Quaternion.LookRotation(direction);
+            _transform.rotation = Quaternion.Slerp(_transform.rotation, lookRotation, Time.deltaTime * 5f); // Smooth rotation
         }
     }
 
@@ -79,5 +110,12 @@ public class Carrot : MonoBehaviour
         _danceSequence = DOTween.Sequence();
         _danceSequence.Append(_transform.DOPunchScale(_pulsePunch, _pulseDuration, _pulseVibrato, _pulseElasticity).SetEase(Ease.InOutBack));
         _danceSequence.Play();
+    }
+
+    public void SetSelected()
+    {
+        _danceSequence.Kill();
+        _isSelected = true;
+        _innerTransform.RotateAround(_innerTransform.position, Vector3.right, 90f);
     }
 }
