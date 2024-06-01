@@ -14,6 +14,7 @@ public class Carrot : MonoBehaviour
     [SerializeField] private Transform _innerTransform = default;
     [SerializeField] private Transform[] _leaves = default;
     [SerializeField] private Rigidbody _rigidbody = default;
+    [SerializeField] private ParticleSystem _particles = default;
 
     [SerializeField] private float _leavesDelay = 1f;
     [SerializeField] private float _leavesDance = 10f;
@@ -186,6 +187,7 @@ public class Carrot : MonoBehaviour
             Vector3 mouseWorldPosition =
                 _mainCamera.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, _dragZ));
             _dirtPile.OnCarrotHarvested();
+            _particles.Play();
             _transform.DOMove(mouseWorldPosition, 0.25f).OnComplete(() =>
             {
                 _isDragged = true;
