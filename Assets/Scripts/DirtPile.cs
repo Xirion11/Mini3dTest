@@ -20,6 +20,9 @@ public class DirtPile : MonoBehaviour
 
     private IEnumerator CreateCarrot()
     {
+        _timerImage.fillAmount = 0f;
+        _timerImage.gameObject.SetActive(true);
+        
         float currentGrowthTime = _carrotGrowthTime;
         float progress = 0f;
 
@@ -35,6 +38,7 @@ public class DirtPile : MonoBehaviour
         _timerImage.rectTransform.DOScale(Vector3.zero, 0.25f).SetEase(Ease.InBack).OnComplete(() =>
         {
             var carrot = _pool.Get(_carrotSpot);
+            _timerImage.gameObject.SetActive(false);
         });
 
         //var carrot = _pool.Get(_carrotSpot);
