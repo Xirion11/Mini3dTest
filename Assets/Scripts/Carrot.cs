@@ -20,22 +20,25 @@ public class Carrot : MonoBehaviour
     [SerializeField] private float _duration = 0.25f;
     [SerializeField] private int _vibrato = 10;
     [SerializeField] private float _elasticity = 1f;
+    
+    [Header("Carrot Pulse")]
+    [SerializeField] private Vector3 _pulsePunch = default;
+    [SerializeField] private float _pulseDuration = 0.25f;
+    [SerializeField] private int _pulseVibrato = 10;
+    [SerializeField] private float _pulseElasticity = 1f;
 
     private Sequence _danceSequence = default;
 
     private void Start()
     {
-        //DOVirtual.DelayedCall(_leavesDelay, ShowLeaves);
         ShowLeaves();
     }
 
-    // Update is called once per frame
-    void Update()
+    private void Update()
     {
         if (Input.GetKeyDown(KeyCode.P))
         {
-            //_danceSequence.Append();
-            Dance();
+            Pulse();
         }
     }
 
@@ -52,8 +55,6 @@ public class Carrot : MonoBehaviour
         );
         _danceSequence.SetLoops(-1, LoopType.Yoyo);
         _danceSequence.Play();
-        // _transform.DORotate(new Vector3(0f, 0f, _leavesDance), _leavesDanceDuration).SetLoops(-1, LoopType.Yoyo)
-        //     .SetEase(Ease.InOutBack).SetDelay(Random.Range(0.25f, 0.5f));
     }
 
     private void ShowLeaves()
@@ -71,5 +72,12 @@ public class Carrot : MonoBehaviour
         }
 
         DOVirtual.DelayedCall(0.35f, Dance);
+    }
+
+    private void Pulse()
+    {
+        _danceSequence = DOTween.Sequence();
+        _danceSequence.Append(_transform.DOPunchScale(_pulsePunch, _pulseDuration, _pulseVibrato, _pulseElasticity).SetEase(Ease.InOutBack));
+        _danceSequence.Play();
     }
 }

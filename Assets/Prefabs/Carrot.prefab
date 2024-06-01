@@ -396,6 +396,11 @@ MonoBehaviour:
   _duration: 0.25
   _vibrato: 10
   _elasticity: 1
+  _pulsePunch: {x: 0.1, y: 0.8, z: 0.1}
+  _pulseDuration: 0.3
+  _pulseVibrato: 5
+  _pulseElasticity: 1
+  _pulseEase: 28
 --- !u!1 &5533798610960152760
 GameObject:
   m_ObjectHideFlags: 0
