@@ -347,6 +347,8 @@ GameObject:
   m_Component:
   - component: {fileID: 5825304255138734570}
   - component: {fileID: 7452449697572410424}
+  - component: {fileID: 8005947172969887755}
+  - component: {fileID: 3573844167836959657}
   m_Layer: 0
   m_Name: Carrot
   m_TagString: Untagged
@@ -382,7 +384,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 930c25a7aadc75449836e81f8cbfbc81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _transform: {fileID: 9035802257931530992}
+  _transform: {fileID: 5825304255138734570}
+  _bodyTransform: {fileID: 9035802257931530992}
   _innerTransform: {fileID: 7575071146422225204}
   _leaves:
   - {fileID: 9026043895695092797}
@@ -390,9 +393,11 @@ MonoBehaviour:
   - {fileID: 6194924689868854515}
   - {fileID: 669536811976416485}
   - {fileID: 5727159384198153140}
+  _rigidbody: {fileID: 8005947172969887755}
   _leavesDelay: 2
   _leavesDance: 5
   _leavesDanceDuration: 1
+  _dragZ: 3.5
   _punch: {x: 0.5, y: 0.5, z: 0.5}
   _duration: 0.25
   _vibrato: 10
@@ -404,6 +409,59 @@ MonoBehaviour:
   _groundLayerMask:
     serializedVersion: 2
     m_Bits: 128
+  _harvestStrenght: {x: 0.05, y: 0.05, z: 0.05}
+  _harvestDuration: 0.2
+  _harvestVibrato: 100
+--- !u!54 &8005947172969887755
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3921542340438253769}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 14
+  m_CollisionDetection: 0
+--- !u!136 &3573844167836959657
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3921542340438253769}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.1
+  m_Height: 0.4
+  m_Direction: 1
+  m_Center: {x: 0, y: 0.05, z: 0}
 --- !u!1 &5533798610960152760
 GameObject:
   m_ObjectHideFlags: 0

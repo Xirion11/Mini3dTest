@@ -28,5 +28,13 @@ public class PointerHandler : MonoBehaviour
                 _selectedDirtPile.OnSelected();
             }
         }
+
+        if (Input.GetMouseButtonUp(0))
+        {
+            if (_selectedDirtPile != null)
+            {
+                _selectedDirtPile.OnDeselected();
+            }
+        }
     }
 }

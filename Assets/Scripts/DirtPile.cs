@@ -48,4 +48,16 @@ public class DirtPile : MonoBehaviour
     {
         _currentCarrot?.SetSelected();
     }
+
+    public void OnDeselected()
+    {
+        _currentCarrot?.SetDeselected();
+        DOVirtual.DelayedCall(2f, ReturnCarrotToPool);
+    }
+
+    private void ReturnCarrotToPool()
+    {
+        _pool.ReturnToPool(_currentCarrot);
+        _currentCarrot = null;
+    }
 }
