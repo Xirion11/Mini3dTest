@@ -185,6 +185,7 @@ public class Carrot : MonoBehaviour
         {
             Vector3 mouseWorldPosition =
                 _mainCamera.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, _dragZ));
+            _dirtPile.OnCarrotHarvested();
             _transform.DOMove(mouseWorldPosition, 0.25f).OnComplete(() =>
             {
                 _isDragged = true;
@@ -205,20 +206,31 @@ public class Carrot : MonoBehaviour
             _rigidbody.isKinematic = false;
             _rigidbody.constraints = RigidbodyConstraints.None;
             DOVirtual.DelayedCall(2f, ReturnToPool);
+            
+            Vector3 force = _mouseVelocity * _dragForceMultiplier;
+            _rigidbody.AddForce(force, ForceMode.Impulse);
+
+            Vector3 angularForce = _mouseVelocity * _angularForceMultiplier;//new Vector3(-_mouseVelocity.y, _mouseVelocity.x, 0) * _angularForceMultiplier;
+            _rigidbody.AddTorque(angularForce, ForceMode.Impulse);
         }
         _isDragged = false;
         _isSelected = false;
         
-        Vector3 force = _mouseVelocity * _dragForceMultiplier;
-        _rigidbody.AddForce(force, ForceMode.Impulse);
-
-        Vector3 angularForce = _mouseVelocity * _angularForceMultiplier;//new Vector3(-_mouseVelocity.y, _mouseVelocity.x, 0) * _angularForceMultiplier;
-        _rigidbody.AddTorque(angularForce, ForceMode.Impulse);
+        
     }
     
     private void ReturnToPool()
     {
         _dirtPile.OnCarrotReturnedToPool();
         _pool.ReturnToPool(this);
+    }
+
+    private void OnCollisionEnter(Collision other)
+    {
+        // if (other.collider.name.CompareTo("Plane") == 0)
+        // {
+        //     _bodyTransform.DOPunchScale(_pulsePunch, _pulseDuration, _pulseVibrato, _pulseElasticity)
+        //         .SetEase(Ease.InOutBack);
+        // }
     }
 }
