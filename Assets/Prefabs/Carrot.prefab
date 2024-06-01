@@ -398,6 +398,8 @@ MonoBehaviour:
   _leavesDance: 5
   _leavesDanceDuration: 1
   _dragZ: 3.5
+  _dragForceMultiplier: 0.5
+  _angularForceMultiplier: 0.01
   _punch: {x: 0.5, y: 0.5, z: 0.5}
   _duration: 0.25
   _vibrato: 10

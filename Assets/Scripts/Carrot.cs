@@ -19,6 +19,8 @@ public class Carrot : MonoBehaviour
     [SerializeField] private float _leavesDance = 10f;
     [SerializeField] private float _leavesDanceDuration = 1f;
     [SerializeField] private float _dragZ = 3.5f;
+    [SerializeField] private float _dragForceMultiplier = 10.0f;
+    [SerializeField] private float _angularForceMultiplier = 1f;
 
     [Header("Scale Punch")]
     [SerializeField] private Vector3 _punch = default;
@@ -47,6 +49,8 @@ public class Carrot : MonoBehaviour
     private bool _isSelected = false;
     private CarrotPool _pool;
     private DirtPile _dirtPile;
+    private Vector3 _previousMousePosition;
+    private Vector3 _mouseVelocity;
 
     private void Awake()
     {
@@ -74,6 +78,8 @@ public class Carrot : MonoBehaviour
             Vector3 mouseWorldPosition = _mainCamera.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, _dragZ));
             _transform.position = mouseWorldPosition;
             Debug.Log(_rigidbody.velocity);
+            _mouseVelocity = (mouseWorldPosition - _previousMousePosition) / Time.deltaTime;
+            _previousMousePosition = mouseWorldPosition;
         }
     }
 
@@ -83,6 +89,7 @@ public class Carrot : MonoBehaviour
         _rigidbody.isKinematic = true;
         _rigidbody.constraints = RigidbodyConstraints.FreezePosition;
         _transform.position = carrotSpot.position;
+        _transform.rotation = Quaternion.identity;
         ShowLeaves();
         _pool = pool;
     }
@@ -109,6 +116,7 @@ public class Carrot : MonoBehaviour
 
     private void Dance()
     {
+        _danceSequence?.Kill();
         _danceSequence = DOTween.Sequence();
         _danceSequence.Append(
             _bodyTransform.DORotate(new Vector3(0f, 0f, -_leavesDance), _leavesDanceDuration)
@@ -139,12 +147,12 @@ public class Carrot : MonoBehaviour
         DOVirtual.DelayedCall(0.35f, Dance);
     }
 
-    private void Pulse()
-    {
-        _danceSequence = DOTween.Sequence();
-        _danceSequence.Append(_bodyTransform.DOPunchScale(_pulsePunch, _pulseDuration, _pulseVibrato, _pulseElasticity).SetEase(Ease.InOutBack));
-        _danceSequence.Play();
-    }
+    // private void Pulse()
+    // {
+    //     _danceSequence = DOTween.Sequence();
+    //     _danceSequence.Append(_bodyTransform.DOPunchScale(_pulsePunch, _pulseDuration, _pulseVibrato, _pulseElasticity).SetEase(Ease.InOutBack));
+    //     _danceSequence.Play();
+    // }
 
     public void SetSelected()
     {
@@ -200,6 +208,12 @@ public class Carrot : MonoBehaviour
         }
         _isDragged = false;
         _isSelected = false;
+        
+        Vector3 force = _mouseVelocity * _dragForceMultiplier;
+        _rigidbody.AddForce(force, ForceMode.Impulse);
+
+        Vector3 angularForce = _mouseVelocity * _angularForceMultiplier;//new Vector3(-_mouseVelocity.y, _mouseVelocity.x, 0) * _angularForceMultiplier;
+        _rigidbody.AddTorque(angularForce, ForceMode.Impulse);
     }
     
     private void ReturnToPool()
