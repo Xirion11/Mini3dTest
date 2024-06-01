@@ -23,10 +23,11 @@ public class Carrot : MonoBehaviour
 
     private Sequence _danceSequence = default;
 
-    // private void Start()
-    // {
-    //     DOVirtual.DelayedCall(_leavesDelay, ShowLeaves);
-    // }
+    private void Start()
+    {
+        //DOVirtual.DelayedCall(_leavesDelay, ShowLeaves);
+        ShowLeaves();
+    }
 
     // Update is called once per frame
     void Update()
