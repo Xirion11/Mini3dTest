@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
+using Systems;
 using UnityEngine;
 using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
@@ -40,9 +41,12 @@ public class Carrot : MonoBehaviour
     
     private Sequence _danceSequence = default;
     private Sequence _harvestSequence = default;
-    private bool _isSelected = false;
+    private bool _isDragged = false;
     private GameObject _sphere;
     private Camera _mainCamera;
+    private bool _isSelected = false;
+    private CarrotPool _pool;
+    private DirtPile _dirtPile;
 
     private void Awake()
     {
@@ -62,7 +66,7 @@ public class Carrot : MonoBehaviour
             PlayHarvestAnimation();
         }
 
-        if (_isSelected)
+        if (_isDragged)
         {
             // Vector3 direction = _transform.position - Input.mousePosition;
             // Quaternion rotation = Quaternion.LookRotation(direction);
@@ -72,8 +76,18 @@ public class Carrot : MonoBehaviour
             Debug.Log(_rigidbody.velocity);
         }
     }
+
+    public void Setup(DirtPile dirtPile, Transform carrotSpot, CarrotPool pool)
+    {
+        _dirtPile = dirtPile;
+        _rigidbody.isKinematic = true;
+        _rigidbody.constraints = RigidbodyConstraints.FreezePosition;
+        _transform.position = carrotSpot.position;
+        ShowLeaves();
+        _pool = pool;
+    }
     
-    void RotateObjectToMouse()
+    private void RotateObjectToMouse()
     {
         Ray ray = _mainCamera.ScreenPointToRay(Input.mousePosition);
 
@@ -134,6 +148,7 @@ public class Carrot : MonoBehaviour
 
     public void SetSelected()
     {
+        _isSelected = true;
         _danceSequence.Kill();
         
         //_innerTransform.RotateAround(_innerTransform.position, Vector3.right, 90f);
@@ -143,28 +158,53 @@ public class Carrot : MonoBehaviour
 
     private void PlayHarvestAnimation()
     {
+        SetHarvestSequence();
+        DOVirtual.DelayedCall(0.25f, () => { BeginDrag(); });
+    }
+
+    private void SetHarvestSequence()
+    {
         _harvestSequence = DOTween.Sequence();
         _harvestSequence.Append(_bodyTransform.DOShakePosition(_harvestDuration, _harvestStrenght, _harvestVibrato));
         _harvestSequence.Join(_bodyTransform.DOScale(new Vector3(1f, 1.5f, 1f), 0.25f));
         _harvestSequence.Play();
-        DOVirtual.DelayedCall(0.25f, () =>
+    }
+
+    private void BeginDrag()
+    {
+        _bodyTransform.DOScale(Vector3.one, 0.25f);
+        if (_isSelected)
         {
-            //_isSelected = true;
-            _bodyTransform.DOScale(1f, 0.25f);
-            Vector3 mouseWorldPosition = _mainCamera.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, _dragZ));
+            Vector3 mouseWorldPosition =
+                _mainCamera.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, _dragZ));
             _transform.DOMove(mouseWorldPosition, 0.25f).OnComplete(() =>
             {
-                _isSelected = true;
+                _isDragged = true;
                 _rigidbody.isKinematic = true;
                 _rigidbody.constraints = RigidbodyConstraints.FreezePosition;
             });
-        });
+        }
+        else
+        {
+            Dance();
+        }
     }
 
     public void SetDeselected()
     {
-        _rigidbody.isKinematic = false;
-        _rigidbody.constraints = RigidbodyConstraints.None;
+        if(_isDragged)
+        {
+            _rigidbody.isKinematic = false;
+            _rigidbody.constraints = RigidbodyConstraints.None;
+            DOVirtual.DelayedCall(2f, ReturnToPool);
+        }
+        _isDragged = false;
         _isSelected = false;
+    }
+    
+    private void ReturnToPool()
+    {
+        _dirtPile.OnCarrotReturnedToPool();
+        _pool.ReturnToPool(this);
     }
 }
