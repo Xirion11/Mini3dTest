@@ -1,6 +1,4 @@
-using System;
 using System.Collections;
-using System.Collections.Generic;
 using DG.Tweening;
 using Systems;
 using UnityEngine;
@@ -78,8 +76,6 @@ public class DirtPile : MonoBehaviour
     public void OnDeselected()
     {
         _currentCarrot?.SetDeselected();
-        //_currentCarrot = null;
-        //DOVirtual.DelayedCall(2f, ReturnCarrotToPool);
     }
 
     public void OnCarrotHarvested()
@@ -94,10 +90,4 @@ public class DirtPile : MonoBehaviour
         _currentCarrot = null;
         StartCoroutine(CreateCarrot());
     }
-
-    // private void ReturnCarrotToPool()
-    // {
-    //     _pool.ReturnToPool(_currentCarrot);
-    //     _currentCarrot = null;
-    // }
 }

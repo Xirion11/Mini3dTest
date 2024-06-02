@@ -1,22 +1,15 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using DG.Tweening;
 using Systems;
 using UnityEngine;
-using UnityEngine.Serialization;
-using Random = UnityEngine.Random;
 
 public class Carrot : MonoBehaviour
 {
     [SerializeField] private Transform _transform = default;
     [SerializeField] private Transform _bodyTransform = default;
-    [SerializeField] private Transform _innerTransform = default;
     [SerializeField] private Transform[] _leaves = default;
     [SerializeField] private Rigidbody _rigidbody = default;
     [SerializeField] private ParticleSystem _particles = default;
 
-    [SerializeField] private float _leavesDelay = 1f;
     [SerializeField] private float _leavesDance = 10f;
     [SerializeField] private float _leavesDanceDuration = 1f;
     [SerializeField] private float _dragZ = 3.5f;
@@ -29,18 +22,12 @@ public class Carrot : MonoBehaviour
     [SerializeField] private int _vibrato = 10;
     [SerializeField] private float _elasticity = 1f;
     
-    [Header("Carrot Pulse")]
-    [SerializeField] private Vector3 _pulsePunch = default;
-    [SerializeField] private float _pulseDuration = 0.25f;
-    [SerializeField] private int _pulseVibrato = 10;
-    [SerializeField] private float _pulseElasticity = 1f;
     [SerializeField] private LayerMask _groundLayerMask = default;
     
     [Header("Harvest")]
     [SerializeField] private Vector3 _harvestStrenght = default;
     [SerializeField] private float _harvestDuration = 0.25f;
     [SerializeField] private int _harvestVibrato = 10;
-    //[SerializeField] private float _harvestElasticity = 1f;
     
     private Sequence _danceSequence = default;
     private Sequence _harvestSequence = default;
@@ -65,20 +52,10 @@ public class Carrot : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.P))
-        {
-            //Pulse();
-            PlayHarvestAnimation();
-        }
-
         if (_isDragged)
         {
-            // Vector3 direction = _transform.position - Input.mousePosition;
-            // Quaternion rotation = Quaternion.LookRotation(direction);
-            // _transform.rotation = rotation;
             Vector3 mouseWorldPosition = _mainCamera.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, _dragZ));
             _transform.position = mouseWorldPosition;
-            Debug.Log(_rigidbody.velocity);
             _mouseVelocity = (mouseWorldPosition - _previousMousePosition) / Time.deltaTime;
             _previousMousePosition = mouseWorldPosition;
         }
@@ -93,26 +70,6 @@ public class Carrot : MonoBehaviour
         _transform.rotation = Quaternion.identity;
         ShowLeaves();
         _pool = pool;
-    }
-    
-    private void RotateObjectToMouse()
-    {
-        Ray ray = _mainCamera.ScreenPointToRay(Input.mousePosition);
-
-        // Raycast to find the ground hit position
-        if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, _groundLayerMask))
-        {
-            Vector3 newPosition = new Vector3(hit.point.x, 1f, hit.point.z);//hit.point + Vector3.up * 0.5f;
-            //newPosition = new Vector3(newPosition.x, Mathf.Clamp(newPosition.y, minY, maxY), newPosition.z);
-            _sphere.transform.position = newPosition;
-            _sphere.transform.localScale = Vector3.one * 0.1f;
-            
-            Vector3 direction = (_sphere.transform.position - _bodyTransform.position).normalized;
-
-            // Calculate the rotation towards the target point
-            Quaternion lookRotation = Quaternion.LookRotation(direction);
-            _bodyTransform.rotation = Quaternion.Slerp(_bodyTransform.rotation, lookRotation, Time.deltaTime * 5f); // Smooth rotation
-        }
     }
 
     private void Dance()
@@ -148,19 +105,10 @@ public class Carrot : MonoBehaviour
         DOVirtual.DelayedCall(0.35f, Dance);
     }
 
-    // private void Pulse()
-    // {
-    //     _danceSequence = DOTween.Sequence();
-    //     _danceSequence.Append(_bodyTransform.DOPunchScale(_pulsePunch, _pulseDuration, _pulseVibrato, _pulseElasticity).SetEase(Ease.InOutBack));
-    //     _danceSequence.Play();
-    // }
-
     public void SetSelected()
     {
         _isSelected = true;
         _danceSequence.Kill();
-        
-        //_innerTransform.RotateAround(_innerTransform.position, Vector3.right, 90f);
 
         PlayHarvestAnimation();
     }
@@ -168,7 +116,7 @@ public class Carrot : MonoBehaviour
     private void PlayHarvestAnimation()
     {
         SetHarvestSequence();
-        DOVirtual.DelayedCall(0.25f, () => { BeginDrag(); });
+        DOVirtual.DelayedCall(0.25f, BeginDrag);
     }
 
     private void SetHarvestSequence()
@@ -212,27 +160,16 @@ public class Carrot : MonoBehaviour
             Vector3 force = _mouseVelocity * _dragForceMultiplier;
             _rigidbody.AddForce(force, ForceMode.Impulse);
 
-            Vector3 angularForce = _mouseVelocity * _angularForceMultiplier;//new Vector3(-_mouseVelocity.y, _mouseVelocity.x, 0) * _angularForceMultiplier;
+            Vector3 angularForce = _mouseVelocity * _angularForceMultiplier;
             _rigidbody.AddTorque(angularForce, ForceMode.Impulse);
         }
         _isDragged = false;
         _isSelected = false;
-        
-        
     }
     
     private void ReturnToPool()
     {
         _dirtPile.OnCarrotReturnedToPool();
         _pool.ReturnToPool(this);
-    }
-
-    private void OnCollisionEnter(Collision other)
-    {
-        // if (other.collider.name.CompareTo("Plane") == 0)
-        // {
-        //     _bodyTransform.DOPunchScale(_pulsePunch, _pulseDuration, _pulseVibrato, _pulseElasticity)
-        //         .SetEase(Ease.InOutBack);
-        // }
     }
 }

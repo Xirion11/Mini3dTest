@@ -1,6 +1,3 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class WorldCanvasRotation : MonoBehaviour
@@ -17,10 +14,8 @@ public class WorldCanvasRotation : MonoBehaviour
 
     void LateUpdate()
     {
-        {
-            Vector3 direction = transform.position - _mainCamera.transform.position;
-            Quaternion rotation = Quaternion.LookRotation(direction);
-            _transform.rotation = rotation;
-        }
+        Vector3 direction = transform.position - _mainCamera.transform.position;
+        Quaternion rotation = Quaternion.LookRotation(direction);
+        _transform.rotation = rotation;
     }
 }
