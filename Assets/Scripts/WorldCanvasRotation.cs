@@ -9,7 +9,7 @@ public class WorldCanvasRotation : MonoBehaviour
     private void Awake()
     {
         _mainCamera = Camera.main;
-        _canvas.worldCamera = Camera.main;
+        _canvas.worldCamera = _mainCamera;
     }
 
     void LateUpdate()
