@@ -55,7 +55,7 @@ public class Carrot : MonoBehaviour
         if (_isDragged)
         {
             Vector3 mouseWorldPosition = _mainCamera.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, _dragZ));
-            _transform.position = mouseWorldPosition;
+            _transform.position = Vector3.Lerp(_transform.position, mouseWorldPosition, 0.1f);;
             _mouseVelocity = (mouseWorldPosition - _previousMousePosition) / Time.deltaTime;
             _previousMousePosition = mouseWorldPosition;
         }
